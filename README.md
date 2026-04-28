@@ -1,43 +1,39 @@
 # Bilgisayarlı Görüye Giriş - Görüntü Sentezi ve Yapboz (Jigsaw) Üreteci
 
- Bu repo, Ondokuz Mayıs Üniversitesi Bilgisayar Mühendisliği bölümünde aldığım **Bilgisayarlı Görüye Giriş** dersi proje ödevi için hazırladığım MATLAB/Octave betiklerini içermektedir. 
+Bu depo, Ondokuz Mayıs Üniversitesi Bilgisayar Mühendisliği bölümü **Bilgisayarlı Görüye Giriş** dersi kapsamında geliştirdiğim MATLAB/Octave betiklerini içermektedir. 
 
-Projeyi dışarıdan hazır kütüphanelere (OpenCV vb.) bağımlı kalmadan, işin tamamen matris matematiğine ve temel algoritmik mantığına inerek geliştirdim. Hem MATLAB hem de GNU Octave (özellikle Ubuntu/Linux ortamlarında) ile tam uyumlu çalışacak şekilde vektörize edilmiştir.
+Proje, dış kütüphane bağımlılığı olmadan tamamen matris matematiği ve vektörize işlemler üzerine kuruludur. Hem MATLAB hem de GNU Octave (Ubuntu/Linux) ortamlarında sorunsuz çalışmaktadır.
 
----
+## 🚀 Projenin Özeti
 
-## 🚀 Projenin İçeriği
+Sistem iki ana aşamadan oluşur: Önce matematiksel denklemlerle "yoktan" bir görüntü var edilir, ardından bu görüntü bir algoritma ile parçalanıp karıştırılarak bir bulmacaya dönüştürülür.
 
-Proje genel olarak iki farklı betikten (script) oluşuyor. İstenen görevler doğrultusunda şu iki işlemi gerçekleştiriyor:
+### 1. `math_artist.m` - Matematiksel Görüntü Sentezi
+Bu betik, hazır bir resim dosyası yüklemek yerine pikselleri trigonometrik ve üstel fonksiyonlarla oluşturur.
+* **Vektörize Hesaplama:** Kartezyen ve kutupsal koordinatlar kullanılarak $1000 \times 1000$ çözünürlükte $R$, $G$ ve $B$ kanalları sentezlenir.
+* **Topografik Analiz:** Her renk kanalının yoğunluk değerleri 3D yüzey (`surf`) grafikleri olarak görselleştirilerek matematiksel doku analiz edilir.
+* **Normalize Çıktı:** Tüm kanallar $[0, 1]$ aralığına normalize edilerek `RGB_img` değişkeni olarak belleğe alınır.
 
-### 1. `math_artist.m` - Matematiksel Fonksiyonlarla RGB Sentezi
-Hazır bir resim kullanmak, `rand`, `ones` veya `zeros` gibi basit fonksiyonlarla matris doldurmak yerine; tamamen trigonometrik (`sin`, `cos`), üstel (`exp`) ve kutupsal koordinat ($R$, $Theta$) denklemleri kullanarak yapay bir RGB görüntü sentezler. 
-* Döngü (for/while) kullanılmadan, tüm pikseller kartezyen matrisler üzerinden vektörize olarak hesaplanır.
-* Oluşturulan her bir renk kanalının (Kırmızı, Yeşil, Mavi) piksel yoğunlukları, 3 boyutlu uzayda topografik yüzey (surf) olarak çizdirilir.
+### 2. `puzzle_generator.m` - Dinamik Yapboz Üreteci
+`math_artist` tarafından üretilen veya sistemde hazır bulunan bir görüntüyü alarak işler.
+* **Merkezi Kırpma (Center Crop):** Görüntüyü bozmadan merkezden kare formuna getirir.
+* **Grid Bölümleme:** Görüntüyü $N \times N$ boyutunda (varsayılan $3 \times 3$) hücrelere ayırır.
+* **Görsel Çerçeveleme:** Her bir yapboz parçasının kenarlarına `border_size` parametresi ile siyah sınırlar ekler.
+* **Rastgele Karıştırma:** `randperm` algoritması ile parçaların yerlerini değiştirerek 3 farklı zorluk varyasyonu sunar.
 
-### 2. `puzzle_generator.m` - Jigsaw (Bulmaca) Oluşturucu
-Bir görüntüyü matris uzayında alt bloklara bölüp rastgele karıştırarak yapboz varyasyonları elde eder.
-* **Merkezi Kırpma (Center Crop):** Girdi görüntüsünün en-boy oranına bakarak tam merkezden kusursuz bir kare kırpar.
-* **Bölütleme (Slicing):** Kare matrisi `mat2cell` ile NxN (örneğin 4x4 = 16) eşit hücreye böler ve her parçanın etrafına yapboz hissi vermesi için siyah çerçeveler çizer.
-* **Rastgele Karma (Shuffling):** Elde edilen parçaları `randperm` ile istatistiksel olarak karıştırır ve 3 farklı varyasyon oluşturur.
+## 🛠️ Kullanım Rehberi
 
----
+Kodlar temel matris fonksiyonlarını kullandığı için ekstra bir toolbox kurulumu gerektirmez.
 
-## 🛠️ Kurulum ve Çalıştırma
-
-Kodlar herhangi bir ekstra "Image Processing Toolbox" gerektirmez, temel matris fonksiyonlarıyla yazılmıştır.
-
-1. Repoyu bilgisayarınıza klonlayın:
+1. **Repoyu Klonlayın:**
    ```bash
-   git clone https://github.com/kullaniciadiniz/bilgisayarli-goruye-giris-proje.git
+   git clone https://github.com/eneskaanafacan/bilgisayarli-goruye-giris-proje.git
    cd bilgisayarli-goruye-giris-proje
    ```
-2. MATLAB veya GNU Octave'ı açın.
-3. Çalışma dizini olarak bu klasörü seçin.
-4. Sırasıyla betikleri çalıştırın:
-   * Önce `math_artist` yazıp Enter'a basın (Yapay resmi üretir).
-   * Ardından `puzzle_generator` yazıp Enter'a basın (Üretilen bu resmi alıp yapboza çevirir).
+2. **Çalıştırma Sırası:**
+   * MATLAB veya Octave komut satırına `math_artist` yazarak sanatsal görüntüyü ve kanalları üretin.
+   * Ardından `puzzle_generator` komutunu vererek bu görüntünün yapboz versiyonlarını oluşturun.
 
-*Not: Eğer `math_artist` çalıştırılmadan `puzzle_generator` çalıştırılırsa, kod hata vermez; kendi içinde sentetik bir test matrisi veya `peppers.png` kullanarak çalışmaya devam eder.*
+> **Not:** `puzzle_generator.m`, çalışma dizininde (workspace) `RGB_img` değişkenini bulamazsa otomatik olarak sistemdeki `peppers.png` dosyasını veya sentetik bir matrisi girdi olarak kabul eder.
 
 ---
